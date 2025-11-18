@@ -269,7 +269,7 @@ def predict_in_chunks_streamlit(RF, RFsum, model, norm_params, target_time_sampl
                                        i+1, start, end-1)
             
             # Use full container width for better visibility
-            st.pyplot(fig, use_container_width=True)
+            st.pyplot(fig)
             plt.close(fig)
         
         # Small delay
@@ -571,9 +571,7 @@ def main():
     
     start_button = st.button(
         "🚀 Start Denoising Process",
-        disabled=not all_inputs_valid,
-        type="primary",
-        use_container_width=True
+        disabled=not all_inputs_valid
     )
     
     # Handle file uploads (save temporarily if uploaded via widget)
@@ -632,8 +630,7 @@ def main():
                             label="📥 Download Results (.mat)",
                             data=f,
                             file_name=os.path.basename(save_path),
-                            mime="application/octet-stream",
-                            use_container_width=True
+                            mime="application/octet-stream"
                         )
             
         except Exception as e:
