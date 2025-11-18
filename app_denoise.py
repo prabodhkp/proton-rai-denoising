@@ -593,10 +593,7 @@ def main():
         st.warning("⚠️ Please provide all required inputs to proceed.")
     
     start_button = st.button(
-        "🚀 Start Denoising Process",
-        disabled=not all_inputs_valid,
-        type="primary",
-        use_container_width=True
+        "🚀 Start Denoising Process", disabled=not all_inputs_valid
     )
     
     # Handle file uploads (save temporarily if uploaded via widget)
