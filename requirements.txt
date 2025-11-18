@@ -1,7 +1,10 @@
 tensorflow-cpu==2.10.0
-streamlit==1.16.0
+streamlit==1.12.2
+protobuf==3.19.6
 numpy==1.23.5
 matplotlib==3.7.0
 scipy==1.9.3
 h5py==3.7.0
 altair==4.2.2
+pandas==1.5.3
+pillow==9.5.0
