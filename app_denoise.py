@@ -5,7 +5,7 @@ Interactive interface for the Proton RAI denoising pipeline
 Compatible with:
 - Python 3.10.18
 - TensorFlow 2.10.0
-- Streamlit 1.51.0
+- Streamlit 1.12+
 """
 
 import streamlit as st
@@ -18,6 +18,8 @@ import tensorflow as tf
 from io import BytesIO
 import time
 import scipy.io as sio
+import gc  # Garbage collection for memory management
+import psutil  # For memory monitoring
 
 # Import your custom modules
 from preprocessing_utils import (
@@ -25,6 +27,17 @@ from preprocessing_utils import (
     bandpass_filter, downsample_data, crop_or_pad
 )
 from model_utils import load_model_and_normalization
+
+# Helper function to display memory usage
+def show_memory_usage():
+    """Display current memory usage"""
+    try:
+        process = psutil.Process(os.getpid())
+        mem_info = process.memory_info()
+        mem_mb = mem_info.rss / 1024 / 1024
+        return f"💾 Memory: {mem_mb:.1f} MB"
+    except:
+        return ""
 
 # Set page config
 st.set_page_config(
@@ -313,8 +326,14 @@ def run_denoising_pipeline(output_folder, rf_file, n_avg, model_file, norm_param
                 RF = crop_or_pad(RF, target_samples)
                 RFsum = RF.mean(axis=2)
                 
+                # Aggressive memory cleanup
+                gc.collect()
+                
                 st.success(f"✅ Preprocessed RF data: Shape {RF.shape}")
                 st.info(f"ℹ️ Delay: {delay} seconds")
+                mem_status = show_memory_usage()
+                if mem_status:
+                    st.caption(mem_status)
         
         # =====================================
         # STEP 2: Load Model
@@ -323,6 +342,10 @@ def run_denoising_pipeline(output_folder, rf_file, n_avg, model_file, norm_param
             st.markdown("#### 🤖 Step 2: Loading Denoising Model")
             with st.spinner("Loading model and normalization parameters..."):
                 model, norm_params = load_model_and_normalization(model_file, norm_params_file)
+                
+                # Aggressive memory cleanup
+                gc.collect()
+                
                 st.success(f"✅ Model loaded successfully")
                 st.info(f"ℹ️ Model input shape: {model.input_shape}")
         
@@ -653,7 +676,7 @@ def main():
     st.markdown("""
     <div style='text-align: center; color: #666; padding: 1rem;'>
     <p><strong>Proton RAI Denoising Pipeline v1.0</strong></p>
-    <p>Compatible with Python 3.10 | TensorFlow 2.10 | Streamlit 1.51</p>
+    <p>Compatible with Python 3.10 | TensorFlow 2.10 | Streamlit 1.12</p>
     </div>
     """, unsafe_allow_html=True)
 
