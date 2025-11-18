@@ -444,44 +444,21 @@ def main():
     
     st.sidebar.markdown("---")
     
-    # Input 1: Output folder - Browse only
+    # Input 1: Output folder - Simple text input (no tkinter for cloud)
     st.sidebar.subheader("1️⃣ Output Folder")
     
     # Initialize session state for folder
     if 'output_folder' not in st.session_state:
-        st.session_state.output_folder = os.path.join(os.getcwd(), "denoising_results")
+        st.session_state.output_folder = "/tmp/denoising_results"
     
-    # Show current folder
-    st.sidebar.info(f"📁 **Current folder:**\n{st.session_state.output_folder}")
+    # Simple text input for cloud deployment
+    output_folder = st.sidebar.text_input(
+        "Output folder path:",
+        value=st.session_state.output_folder,
+        help="Results will be saved here (default: /tmp/denoising_results)"
+    )
     
-    # Browse button
-    try:
-        import tkinter as tk
-        from tkinter import filedialog
-        
-        if st.sidebar.button("📁 Browse for Output Folder", use_container_width=True):
-            root = tk.Tk()
-            root.withdraw()
-            root.wm_attributes('-topmost', 1)
-            folder_selected = filedialog.askdirectory(
-                master=root,
-                title="Select Output Folder",
-                initialdir=st.session_state.output_folder
-            )
-            root.destroy()
-            if folder_selected:
-                st.session_state.output_folder = folder_selected
-                st.rerun()
-        
-        output_folder = st.session_state.output_folder
-        
-    except ImportError:
-        st.sidebar.error("⚠️ Folder browser requires tkinter.")
-        output_folder = st.sidebar.text_input(
-            "Enter output folder path:",
-            value=st.session_state.output_folder,
-            help="Folder where results will be saved"
-        )
+    st.sidebar.info("💡 **Tip:** In cloud, use /tmp/ for temporary storage")
     
     # Input 2: RF data file
     st.sidebar.subheader("2️⃣ RF Data File (.mat)")
@@ -593,7 +570,10 @@ def main():
         st.warning("⚠️ Please provide all required inputs to proceed.")
     
     start_button = st.button(
-        "🚀 Start Denoising Process", disabled=not all_inputs_valid
+        "🚀 Start Denoising Process",
+        disabled=not all_inputs_valid,
+        type="primary",
+        use_container_width=True
     )
     
     # Handle file uploads (save temporarily if uploaded via widget)
